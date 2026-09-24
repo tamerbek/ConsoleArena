@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{12a42538-7b18-4430-9731-1fe90c77a821}</ProjectGuid>
-    <RootNamespace>ConsoleApplication</RootNamespace>
+    <ProjectGuid>{c2493510-4628-4261-833d-9fb58ddfaea7}</ProjectGuid>
+    <RootNamespace>TextBattle</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -123,7 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication.cpp" />
+    <ClCompile Include="TextBattle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
