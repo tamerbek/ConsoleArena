@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include "TextBattle.h"
 
 enum class DamageType { Physical, Fire, Poison };
 
@@ -44,6 +45,60 @@ private:
     DamageType Type;
 };
 
+// 
+class Character {
+
+public:
+
+    Character(std::string InName, int InMaxHealth)
+        : Name(InName), MaxHealth(InMaxHealth)
+    {
+        Health = MaxHealth;
+    }
+
+    int GetHealth() const 
+    {
+        return Health;
+    }
+    
+    bool IsAlive() const {
+        return Health > 0;
+    }
+
+
+    int GetDamage() const
+    {
+        return BaseDamage;
+    }
+
+    int TakeDamage(int Amount)
+    {
+        if (Amount <= 0) {
+            return 0;
+        }
+
+        int HealthBefore = Health;
+        Health -= Amount;
+        if (Health < 0) {
+            Health = 0;
+        
+        }
+        return HealthBefore - Health;  
+    }
+
+
+    void Equip()
+    {
+        return;
+    }
+private:
+    std::string Name;
+    int Health = 0;
+    int MaxHealth = 0;
+    int BaseDamage = 0;
+    Weapon* EquippedWeapon = nullptr;
+};
+
 void RunTests()
 {
     Weapon Sword(1, "Sword", 100, DamageType::Fire);
@@ -55,8 +110,61 @@ void RunTests()
     assert(Axe.GetWeaponDamageType() == DamageType::Poison);
 }
 
+// Character Tests
+
+void TestCharacter_StartsWithFullHealth()
+{
+    // New character has 100 health and alive
+    Character Player("Player", 100);
+    assert(Player.GetHealth() == 100);
+    assert(Player.IsAlive() == true);
+}
+
+void TestCharacter_TakeDamageReturnsDamageTaken()
+{
+    Character Player("Player", 100);
+    assert(Player.TakeDamage(30) == 30);
+}
+
+
+
+void TestCharacter()
+{
+    TestCharacter_StartsWithFullHealth();
+    TestCharacter_TakeDamageReturnsDamageTaken();
+
+    /*
+    
+
+    // Player with health 10 recieve damage 50, health 0 and play dead
+    Character Player1("Player", 10);
+    assert(Player.GetHealth() == 0);
+    assert(Player.isAlive() == false);
+    assert(Player.TakeDamage(50) == 10);
+
+    // Player with health 0 is dead, with health 1 is alive
+    Character Player2("Player", 1);
+    assert(Player2.isAlive() == true);
+    Character Player3("Player", 0);
+    assert(Player3.isAlive() == false);
+
+    //With negative or zero damage health is not reduced
+    Character Player4("Player", 50);
+    Player4.TakeDamage(0);
+    assert(Player4.GetHealth() == 50);
+    Player4.TakeDamage(-20);
+    assert(Player4.GetHealth() == 50);
+
+    // Player without weapon have base damage, with equiped weapon basedamage + weapon damage
+    int test_basedamage = 10;
+    Character Player4("Player", 100);
+    assert(Player4.GetDamage() == test_basedamage);
+    */
+}
+
 int main()
 {
+    TestCharacter();
     Weapon Sword(1, "Sword", 100, DamageType::Fire);
     Sword.GetWeaponDamageType();
     RunTests();
