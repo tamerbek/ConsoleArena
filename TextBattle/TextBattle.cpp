@@ -50,10 +50,11 @@ class Character {
 
 public:
 
-    Character(std::string InName, int InMaxHealth)
+    Character(std::string InName, int InMaxHealth, int InBaseDamage)
         : Name(InName), MaxHealth(InMaxHealth)
     {
         Health = MaxHealth;
+        BaseDamage = InBaseDamage;
     }
 
     int GetHealth() const 
@@ -65,10 +66,12 @@ public:
         return Health > 0;
     }
 
-
     int GetDamage() const
     {
-        return BaseDamage;
+        if (EquippedWeapon == nullptr) {
+            return BaseDamage;
+        }
+        return BaseDamage + EquippedWeapon->GetDamage();
     }
 
     int TakeDamage(int Amount)
@@ -87,8 +90,10 @@ public:
     }
 
 
-    void Equip()
+    void Equip(Weapon* InWeapon)
     {
+        EquippedWeapon = InWeapon;
+
         return;
     }
 private:
@@ -115,58 +120,70 @@ void RunTests()
 void TestCharacter_StartsWithFullHealth()
 {
     // New character has 100 health and alive
-    Character Player("Player", 100);
+    Character Player("Player", 100, 5);
     assert(Player.GetHealth() == 100);
     assert(Player.IsAlive() == true);
 }
 
 void TestCharacter_TakeDamageReturnsDamageTaken()
 {
-    Character Player("Player", 100);
+    Character Player("Player", 100, 5);
     assert(Player.TakeDamage(30) == 30);
+    assert(Player.GetHealth() == 70);
 }
 
+// Player with health 10 recieve damage 50, health 0 and play dead
+void TestCharacter_PlayerDiesFromExcessDamage() 
+{
+    Character Player("Player", 10, 5);
+    assert(Player.TakeDamage(50) == 10);
+    assert(Player.GetHealth() == 0);
+    assert(Player.IsAlive() == false);
+}
 
+// Player with health 0 is dead, with health 1 is alive
+void TestCharacter_AliveAtOneHealthDeadAtZero()
+{
+    Character Player("Player", 1, 5);
+    assert(Player.IsAlive() == true);
+    Character Player1("Player", 0, 5);
+    assert(Player1.IsAlive() == false);
+}
+
+//With negative or zero damage health is not reduced
+void TestCharacter_IgnoresZeroAndNegativeDamage()
+{ 
+    Character Player("Player", 50, 5);
+    Player.TakeDamage(0);
+    assert(Player.GetHealth() == 50);
+    Player.TakeDamage(-20);
+    assert(Player.GetHealth() == 50);
+}
+
+// Player without weapon have base damage, with equiped weapon basedamage + weapon damage
+void TestCharacter_BaseDamageAndDamageWithWeapon() {
+    int BaseDamage = 5;
+    Character Player("Player", 50, BaseDamage);
+    assert(Player.GetDamage() == 5);
+
+    Weapon Sword(1, "Sword", 100, DamageType::Fire);
+    Player.Equip(&Sword);
+    assert(Player.GetDamage() == 105);
+}
 
 void TestCharacter()
 {
     TestCharacter_StartsWithFullHealth();
     TestCharacter_TakeDamageReturnsDamageTaken();
+    TestCharacter_PlayerDiesFromExcessDamage();
+    TestCharacter_AliveAtOneHealthDeadAtZero();
+    TestCharacter_IgnoresZeroAndNegativeDamage();
+    TestCharacter_BaseDamageAndDamageWithWeapon();
 
-    /*
-    
-
-    // Player with health 10 recieve damage 50, health 0 and play dead
-    Character Player1("Player", 10);
-    assert(Player.GetHealth() == 0);
-    assert(Player.isAlive() == false);
-    assert(Player.TakeDamage(50) == 10);
-
-    // Player with health 0 is dead, with health 1 is alive
-    Character Player2("Player", 1);
-    assert(Player2.isAlive() == true);
-    Character Player3("Player", 0);
-    assert(Player3.isAlive() == false);
-
-    //With negative or zero damage health is not reduced
-    Character Player4("Player", 50);
-    Player4.TakeDamage(0);
-    assert(Player4.GetHealth() == 50);
-    Player4.TakeDamage(-20);
-    assert(Player4.GetHealth() == 50);
-
-    // Player without weapon have base damage, with equiped weapon basedamage + weapon damage
-    int test_basedamage = 10;
-    Character Player4("Player", 100);
-    assert(Player4.GetDamage() == test_basedamage);
-    */
 }
 
 int main()
 {
-    TestCharacter();
-    Weapon Sword(1, "Sword", 100, DamageType::Fire);
-    Sword.GetWeaponDamageType();
     RunTests();
     std::cout << "Tests passed\n";
     return 0;
