@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <cstdlib>
 #include "TextBattle.h"
 
 enum class DamageType { Physical, Fire, Poison };
@@ -96,6 +97,15 @@ public:
 
         return;
     }
+
+    int Attack(Character& Target) {
+        return Target.TakeDamage(GetDamage());
+    }
+
+    int Roll(int Min, int Max) {
+        return rand() % (Max - Min + 1) + Min;
+    }
+
 private:
     std::string Name;
     int Health = 0;
@@ -171,6 +181,29 @@ void TestCharacter_BaseDamageAndDamageWithWeapon() {
     assert(Player.GetDamage() == 105);
 }
 
+// Test character attack
+void TestCharacter_AttackDealsCorrectDamage() {
+    Character Player("Player", 100, 5);
+    Character NPC("NPC", 100, 3);
+    assert(Player.Attack(NPC) == 5);
+    assert(Player.GetHealth() == 100);
+    assert(NPC.GetHealth() == 95);
+}
+
+// Test roll funcrion
+void TestCharacter_RollReturnsValueWithinRange() {
+    
+    Character Player("Player", 100, 5);
+    bool bIsEdge = false;
+    for (int i = 0; i < 10000; ++i) {
+        if (Player.Roll(1, 6) < 1) {
+            bIsEdge = true;
+        }
+        
+    }
+    assert(bIsEdge == false);
+}
+
 void TestCharacter()
 {
     TestCharacter_StartsWithFullHealth();
@@ -179,11 +212,14 @@ void TestCharacter()
     TestCharacter_AliveAtOneHealthDeadAtZero();
     TestCharacter_IgnoresZeroAndNegativeDamage();
     TestCharacter_BaseDamageAndDamageWithWeapon();
+    TestCharacter_AttackDealsCorrectDamage();
+    TestCharacter_RollReturnsValueWithinRange();
 
 }
 
 int main()
 {
+    TestCharacter();
     RunTests();
     std::cout << "Tests passed\n";
     return 0;
